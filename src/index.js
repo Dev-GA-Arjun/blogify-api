@@ -11,5 +11,5 @@ app.get("/", async (req,res) => {
 app.use("/api/v1/posts", postRouter)
 
 app.listen(PORT, () => {
-  console.log(`Server running successfully on port ${PORT}`)
+  console.log(`Server Running successfully on port ${PORT}`)
 })
