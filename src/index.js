@@ -5,17 +5,39 @@ const express = require('express')
 const app = express()
 app.use(express.json())
 
-
-
 const connectDB = require('./config/db')
 
 const PORT = process.env.PORT || 8080
 
 const errorHandler = (err, req, res, next) => {
-  console.error(err.stack);
+  const error = { ...err};
+  error.message = err.message;
+  console.log(err)
+  
+  if(err.name === 'CastError'){
+    const message = `Resource not found with Id of ${err.value}`;
+    return res.status(404).json({success: false, error: {message}})
+  }
+
+  if(err.code === 11000){
+    const message = `Duplicate value entered`;
+    return res.status(400).json({
+      success: true,
+      error: {message}
+    })
+  }
+
+  if(err.name === 'ValidationError'){
+    const message = Object.values(err.errors).map(val => val.message)
+    return res.status(400).json({
+      success: false,
+      error: { message }
+    })
+  }
+  
   res.status(500).json({
     success: false,
-    error: 'Internal Server Error' 
+    error: {message: 'Internal Server Error' } 
   });
 };
 
