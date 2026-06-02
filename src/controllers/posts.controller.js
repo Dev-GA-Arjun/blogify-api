@@ -3,7 +3,6 @@ const postService = require('../services/posts.services')
 
 const getAllPosts = async (req, res, next) => {
     try{
-        const 
         const allPosts = await postService.getAllPosts(req.query);
         res.status(200).json({
             success: true,
@@ -88,14 +87,24 @@ const updatePost = async (req, res, next)=>{
 const deletePost = async (req, res, next) => {
     try{
         const id = req.params.id;
+        const currentId = req.user.id;
         
-        const deletedPost = await postService.deletePost(id);
-        if(!deletedPost){
+        const post = await postService.getPostById(id);
+        if(!post){
             return res.status(404).json({
                 success: false,
                 message: `Post with ID ${id} not found`
             })
-        }  
+        }
+        if(post.author.toString() !== currentId){
+            return res.status(403).json({
+                success: false,
+                error: {
+                    message: "You are not authorized to delete this post"
+                }
+            })
+        }
+        await postService.deletePost(id);
         return res.status(204).send()
         
     }catch(err){
