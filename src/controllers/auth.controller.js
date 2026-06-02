@@ -83,7 +83,7 @@ const loginUser = async (req, res, next) => {
         const options = {
             expiresIn: new Date(Date.now() + 1 * 60 * 60 * 1000),
             httpOnly: true,
-            secure: true, //process.env.NODE_ENV === 'production',
+            secure: process.env.NODE_ENV === 'production',
             sameSite: 'strict'
         }
 
