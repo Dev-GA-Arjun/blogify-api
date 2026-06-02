@@ -7,11 +7,18 @@ const createPostRules = [
     body('content').notEmpty().withMessage('Content is required')
 ]
 
-const {getAllPosts, getPostById, createPost } = require("../controllers/posts.controller")
+const updatePostRules = [
+    body('title').optional().notEmpty().withMessage("Title is required"),
+    body('content').optional().notEmpty().withMessage("Content is required")
+]
+
+const {getAllPosts, getPostById, createPost, updatePost, deletePost } = require("../controllers/posts.controller")
 
 router.get("/", getAllPosts)
 router.get("/:id", getPostById)
 router.post("/",createPostRules, createPost)
+router.patch("/:id", updatePostRules, updatePost)
+router.delete("/:id", deletePost)
 
 
 module.exports = router;

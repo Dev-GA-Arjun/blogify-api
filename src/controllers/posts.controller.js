@@ -1,25 +1,42 @@
-const Post = require('../models/posts.models')
-const {validationResult} = require('express-validator') 
+const {validationResult} = require('express-validator')
+const postService = require('../services/posts.services')
 
-const getAllPosts = (req, res) => {
-    
-    res.status(200).json({
-        success: true, 
-        data: "Fetching all blog posts from the modular router!"
-    });
+const getAllPosts = async (req, res, next) => {
+    try{
+        const 
+        const allPosts = await postService.getAllPosts(req.query);
+        res.status(200).json({
+            success: true,
+            data: allPosts
+        })
+    }catch(err){
+        next(err)
+    }
 };
 
-const getPostById = (req, res) => {
-    const postId = req.params.id; 
-    res.status(200).json({
-        success: true,
-        data: {
-            message: `Fetching data for post with ID: ${postId}`
+const getPostById = async (req, res, next) => {
+    try{
+        const postId = req.params.id;
+        const post = await postService.getPostById(postId);
+        if(!post){
+            return res.status(404).json({
+                success: false,
+                error: {
+                    message: `Post with ID ${postId} not found`
+                }
+            })
         }
-    });
+        res.status(200).json({
+            success: true,
+            data: post
+        })
+    }catch(err){
+        next(err)
+    }
+    
 };
 
-const createPost = async (req, res) => {
+const createPost = async (req, res, next) => {
     try{
         const errors = validationResult(req);
         if(!errors.isEmpty()){
@@ -28,21 +45,61 @@ const createPost = async (req, res) => {
                 errors: errors.array()
             })
         }
-        const { title, content } = req.body;
-        await Post.create({
-            title,
-            content
-        })
+        const { title, content, author } = req.body;
+        const newPost = await postService.createPost({title, content, author})
         res.status(201).json({
             success: true,
-            message: "Successfully created"
+            data: newPost
         })
     }catch(err){
-        res.status(500).json({
-            success: false,
-            error: err.message
-        })
+        next(err)
     }
 }
 
-module.exports = { getAllPosts, getPostById, createPost };
+const updatePost = async (req, res, next)=>{
+    try{
+        const errors = validationResult(req);
+        if(!errors.isEmpty()){
+            return res.status(400).json({
+                success: false,
+                errors: errors.array()
+            })
+        }
+        const updatedPostData = req.body;
+        const id = req.params.id;
+        const updatedPost = await postService.updatePost( id, updatedPostData);
+
+        if(!updatedPost){
+            return res.status(404).json({
+                success: false,
+                message: `Post with ID ${id} not found`
+            })
+        }
+
+        res.status(200).json({
+            success: true,
+            data: updatedPost
+        })
+    }catch(err){
+        next(err)
+    }
+}
+
+const deletePost = async (req, res, next) => {
+    try{
+        const id = req.params.id;
+        
+        const deletedPost = await postService.deletePost(id);
+        if(!deletedPost){
+            return res.status(404).json({
+                success: false,
+                message: `Post with ID ${id} not found`
+            })
+        }  
+        return res.status(204).send()
+        
+    }catch(err){
+        next(err)
+    }
+}
+module.exports = { getAllPosts, getPostById, createPost, updatePost, deletePost };
