@@ -1,15 +1,18 @@
 const express = require("express")
+const { body } = require('express-validator')
 const router = express.Router()
 
-const {getAllPosts, getPostsById} = require("../controllers/posts.controller")
+const createPostRules = [
+    body('title').notEmpty().withMessage('Title is required'),
+    body('content').notEmpty().withMessage('Content is required')
+]
+
+const {getAllPosts, getPostById, createPost } = require("../controllers/posts.controller")
 
 router.get("/", getAllPosts)
+router.get("/:id", getPostById)
+router.post("/",createPostRules, createPost)
 
-router.get("/:id", getPostsById)
 
-router.post("/", (req,res) => {
-    res.send('Creating a new blog post...')
-})
-
-module.exports = router
+module.exports = router;
 
