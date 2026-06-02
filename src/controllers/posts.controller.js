@@ -1,4 +1,4 @@
-const {validationResult} = require('express-validator')
+const { validationResult } = require('express-validator')
 const postService = require('../services/posts.services')
 
 const getAllPosts = async (req, res, next) => {
