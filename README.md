@@ -1,6 +1,7 @@
-# Blogify  [Link](https://blogify-api-8odv.onrender.com/)
+# Blogify  
 
 > A clean, secure RESTful blog API with JWT authentication — built to power modern blogging platforms.
+> [blogify-api](https://blogify-api-8odv.onrender.com/)
 
 ![Node.js](https://img.shields.io/badge/Node.js-18.x-339933?style=flat-square&logo=node.js&logoColor=white)
 ![Express](https://img.shields.io/badge/Express-4.x-000000?style=flat-square&logo=express&logoColor=white)
